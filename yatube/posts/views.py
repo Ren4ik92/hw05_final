@@ -31,9 +31,7 @@ def profile(request, username):
     user_post_list = author.posts.select_related('author').order_by(
         '-pub_date')
     following = (request.user.is_authenticated and (Follow.objects.filter(
-        user=request.user, author=author).exists())
-                 )
-    
+        user=request.user, author=author).exists()))
     context = {
         'page_obj': paginator_posts(user_post_list, MESSAGE_N, request),
         'author': author,
