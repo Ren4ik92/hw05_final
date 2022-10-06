@@ -8,7 +8,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from .test_forms import TEMP_MEDIA_ROOT
-from ..models import Post, Group, Comment
+from ..models import Post, Group, Comment, Follow
 from django import forms
 
 User = get_user_model()
@@ -197,6 +197,49 @@ class PostPagesTests(TestCase):
         comment_post_0 = first_object
         self.assertEqual(comment_post_0, PostPagesTests.comment)
 
+    def test_error_page(self):
+        """Несуществующая страница выдаёт ошибку 404 с кастомным шаблоном."""
+        response = self.client.get('/nonexist-page/')
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, 'core/404.html')
+
+    def test_authorized_user_can_follow_other_users(self):
+        """Авторизованный пользователь может подписываться на авторов"""
+        self.authorized_client.get(
+            reverse('posts:profile_follow', args=[self.user2])
+        )
+        following = Follow.objects.get(user=self.user, author=self.user2).id
+        latest_follow = Follow.objects.latest('id').id
+        self.assertEqual(following, latest_follow)
+
+    def test_new_user_post_appears_in_the_feed_of_those_who_follow_him(self):
+        """Пользователю видны посты после подписания на автора"""
+        Follow.objects.create(
+            user=self.user,
+            author=self.user,
+        )
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        self.assertEqual(len(response.context['page_obj']), 1)
+        self.assertEqual(response.context['page_obj'][0].text, self.post.text)
+
+    def test_new_post_does_not_appear_in_the_feed_who_are_not_following(self):
+        """Новый пост не появляется в ленте тех, кто не подписан"""
+        user = User.objects.create_user(username='Jon')
+        Follow.objects.create(
+            user=user,
+            author=self.user,
+        )
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        self.assertEqual(len(response.context['page_obj']), 0)
+
+    def test_authorized_user_can_unfollow_other_users(self):
+        """Пользователь может отписаться"""
+        self.authorized_client.get(
+            reverse('posts:profile_unfollow', kwargs={'username': self.user})
+        )
+        self.assertFalse(
+            Follow.objects.filter(user=self.user2, author=self.user).exists()
+        )
 
 class PaginatorTests(TestCase):
     @classmethod

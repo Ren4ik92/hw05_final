@@ -3,6 +3,7 @@
 {% block title %}Последние обновления на сайте{% endblock %}
 
 {% block content %}
+    {% include 'includes/switcher.html' %}
 {% for post in page_obj %}
   <ul>
     <li>
@@ -18,6 +19,7 @@
             <img class="card-img my-2" src="{{ im.url }}">
         {% endthumbnail %}
     {% endif %}
+  <a href="{% url 'posts:post_detail' post.id %}">подробная информация</a>
   {% if post.group %}
     <p><a href="{% url 'posts:postsname' post.group.slug %}">все записи группы</a></p>
   {% endif %}
