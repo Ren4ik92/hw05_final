@@ -33,6 +33,7 @@ def profile(request, username):
     following = (request.user.is_authenticated and (Follow.objects.filter(
         user=request.user, author=author).exists())
                  )
+    
     context = {
         'page_obj': paginator_posts(user_post_list, MESSAGE_N, request),
         'author': author,
