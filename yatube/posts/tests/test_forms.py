@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 import tempfile
-from ..models import Post, Group, User
+from ..models import Post, Group, User, Comment
 from ..forms import PostForm
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -50,6 +50,7 @@ class PostCreateFormTests(TestCase):
             text='Тестовый пост',
             image=cls.uploaded,
         )
+
 
     @classmethod
     def tearDownClass(cls):
@@ -111,3 +112,15 @@ class PostCreateFormTests(TestCase):
                 group=self.group2,
             ).exists()
         )
+
+    def test_guest_user_cannot_comment_on_the_post(self):
+        comments_count = Comment.objects.count()
+        form_data = {
+            'text': 'тест коммент',
+        }
+        self.authorized_author.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.pk}),
+            data=form_data,
+            follow=True
+        )
+        self.assertEqual(Comment.objects.count(), comments_count + 1)

@@ -52,7 +52,6 @@ class Post(models.Model):
 
     class Meta:
         ordering = ['-pub_date']
-        # verbose_name = 'запись', 'Автор', 'пост'
         verbose_name_plural = 'записи', 'Авторы', 'посты'
 
 
@@ -89,7 +88,7 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name='follower'
     )
-    author = author = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following'

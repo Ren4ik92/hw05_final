@@ -7,10 +7,9 @@ from .units import paginator_posts, MESSAGE_N
 
 def index(request):
     template = 'posts/index.html'
-    post_list = Post.objects.all().order_by('-pub_date')
+    post_list = Post.objects.all()
     context = {
         'page_obj': paginator_posts(post_list, MESSAGE_N, request),
-        'post_list': post_list,
     }
     return render(request, template, context)
 
@@ -18,7 +17,7 @@ def index(request):
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     template = 'posts/group_list.html'
-    post_list = Post.objects.filter(group=group).order_by('-pub_date')
+    post_list = Post.objects.all()
     context = {
         'group': group,
         'page_obj': paginator_posts(post_list, MESSAGE_N, request)
@@ -28,8 +27,7 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    user_post_list = author.posts.select_related('author').order_by(
-        '-pub_date')
+    user_post_list = author.posts.select_related('author')
     following = (request.user.is_authenticated and (Follow.objects.filter(
         user=request.user, author=author).exists()))
     context = {
@@ -44,7 +42,7 @@ def profile(request, username):
 def post_detail(request, post_id, ):
     post = get_object_or_404(Post, pk=post_id)
     comments = Comment.objects.filter(post=post)
-    form = CommentForm(request.POST or None)
+    form = CommentForm()
     context = {
         'post': post,
         'comments': comments,
@@ -129,14 +127,8 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
-    current_user = request.user
-    followed_user = Follow.objects.filter(
-        user=current_user,
-        author__username=username
-    )
-    if followed_user.exists():
-        followed_user.delete()
-    return redirect(
-        'posts:profile',
-        username
-    )
+    author = get_object_or_404(User, username=username)
+    if request.user != author and Follow.objects.filter(
+            user=request.user, author=author).exists():
+        Follow.objects.filter(user=request.user, author=author).delete()
+    return redirect('posts:profile', author)

@@ -87,7 +87,7 @@ class PostsURLTests(TestCase):
                              )
 
     def test_reddirect_guest_client(self):
-        '''Проверка редиректа неавторизованного пользователя'''
+        """Проверка редиректа неавторизованного пользователя"""
         self.post = Post.objects.create(text='Тестовый текст',
                                         author=self.user,
                                         group=self.group)
@@ -135,3 +135,11 @@ class PostsURLTests(TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Post.objects.count(), posts_count)
+
+    def test_url_comment(self):
+        """Страница comment доступна только авторизованному пользователю."""
+        response = self.guest_client.get(
+            reverse('posts:add_comment',
+                    kwargs={'post_id': f'{self.post.id}'})
+        )
+        self.assertEqual(response.status_code, 302)

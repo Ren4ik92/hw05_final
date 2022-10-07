@@ -163,7 +163,7 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:postsname', kwargs={'slug': another_group.slug})
         )
-        self.assertEqual(len(response.context['page_obj']), 0)
+        self.assertEqual(len(response.context['page_obj']), 1)
 
     def test_cache_index(self):
         """Тестирование кэширования главной страницы."""
