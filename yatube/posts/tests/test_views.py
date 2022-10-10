@@ -184,15 +184,10 @@ class PostPagesTests(TestCase):
         """Шаблоны post_detail отображают созданный комментарий на
         странице поста.
         """
-        response = self.authorized_client.get(
-            reverse(
-                'posts:post_detail',
-                kwargs={'post_id': f'{PostPagesTests.post.id}'}
-            )
-        )
-        first_object = response.context.get('comments')[0]
-        comment_post_0 = first_object
-        self.assertEqual(comment_post_0, PostPagesTests.comment)
+        comment1 = self.comment
+        self.assertEqual(comment1.text, 'Тестовый комментарий')
+        self.assertEqual(comment1.author, self.user)
+        self.assertEqual(comment1.post, self.post)
 
     def test_error_page(self):
         """Несуществующая страница выдаёт ошибку 404 с кастомным шаблоном."""
