@@ -168,17 +168,29 @@ class PostPagesTests(TestCase):
     def test_cache_index(self):
         """Тестирование кэширования главной страницы."""
 
-        def response_page():
-            response = self.authorized_client.get(
-                reverse('posts:index')).content.decode('UTF-8')
-            return response
+        Post.objects.create(
+            author=self.user,
+            text='Тестовый пост',
+            group=self.group,
+        )
+        pre_cache_response = self.client.get('posts:index')
+        pre_cache_page = pre_cache_response.content
+        Post.objects.all().delete()
+        post_cache_response = self.client.get('posts:index')
+        post_cache_page = post_cache_response.content
+
+        self.assertEqual(
+            pre_cache_page,
+            post_cache_page,
+        )
 
         cache.clear()
-        text_cache = self.post.text
-        self.assertIn(text_cache, response_page())
-        Post.objects.filter(text=text_cache).delete()
-        cache.clear()
-        self.assertNotIn(text_cache, response_page())
+        after_clear_cache_response = self.client.get('posts:index')
+
+        self.assertNotEqual(
+            after_clear_cache_response,
+            post_cache_response,
+        )
 
     def test_comment_view(self):
         """Шаблоны post_detail отображают созданный комментарий на

@@ -1,4 +1,5 @@
 import shutil
+from http import HTTPStatus
 
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -112,14 +113,34 @@ class PostCreateFormTests(TestCase):
             ).exists()
         )
 
-    def test_guest_user_cannot_comment_on_the_post(self):
-        comments_count = Comment.objects.count()
-        form_data = {
-            'text': 'тест коммент',
-        }
-        self.authorized_author.post(
-            reverse('posts:add_comment', kwargs={'post_id': self.post.pk}),
-            data=form_data,
-            follow=True
+    def test_authorized_user_creates_comment_successfully(self):
+        """Авторизованный пользователь создает комментарий"""
+        comment_count = Comment.objects.count()
+
+        post = Post.objects.create(
+            author=self.author,
+            text='Тестовый пост 3',
+            group=self.group,
+            image=self.uploaded,
         )
-        self.assertEqual(Comment.objects.count(), comments_count + 1)
+
+        form_data = {
+            'post': post,
+            'author': self.author,
+            'text': 'teeeeeeeeeeext',
+        }
+
+        response = self.authorized_author.post(
+            reverse('posts:add_comment', kwargs={'post_id': post.pk}),
+            data=form_data,
+            follow=True,
+        )
+
+        self.assertEqual(
+            Comment.objects.count(),
+            comment_count + 1,
+            'После отправки формы количество постов не изменилось.',
+        )
+        self.assertEqual(
+            response.status_code, HTTPStatus.OK
+        )
