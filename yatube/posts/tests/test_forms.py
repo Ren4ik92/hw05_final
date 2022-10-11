@@ -89,7 +89,6 @@ class PostCreateFormTests(TestCase):
             ).exists()
         )
 
-
     def test_edit_post(self):
         """Валидная форма перезаписывает запись."""
         post_count = Post.objects.count()
