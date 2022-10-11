@@ -69,7 +69,7 @@ class PostsURLTests(TestCase):
         """Страница перенаправит пользователся на login"""
         url_templates_names = {
             "/create/": "/auth/login/?next=/create/",
-            "/posts/1/edit/": f"/auth/login/?next=/posts/{self.post.id}/edit/",
+            f"/posts/{self.post.id}/edit/": f"/auth/login/?next=/posts/{self.post.id}/edit/",
         }
         for address, template in url_templates_names.items():
             with self.subTest(address=address):

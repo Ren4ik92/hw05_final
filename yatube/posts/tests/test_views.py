@@ -191,6 +191,7 @@ class PostPagesTests(TestCase):
             after_clear_cache_response,
             post_cache_response,
         )
+        self.assertTrue(pre_cache_page == post_cache_page)
 
     def test_comment_view(self):
         """Шаблоны post_detail отображают созданный комментарий на

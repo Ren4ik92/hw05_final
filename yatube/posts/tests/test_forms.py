@@ -89,6 +89,7 @@ class PostCreateFormTests(TestCase):
             ).exists()
         )
 
+
     def test_edit_post(self):
         """Валидная форма перезаписывает запись."""
         post_count = Post.objects.count()
@@ -125,8 +126,6 @@ class PostCreateFormTests(TestCase):
         )
 
         form_data = {
-            'post': post,
-            'author': self.author,
             'text': 'teeeeeeeeeeext',
         }
 
@@ -143,4 +142,10 @@ class PostCreateFormTests(TestCase):
         )
         self.assertEqual(
             response.status_code, HTTPStatus.OK
+        )
+        self.assertTrue(
+            Comment.objects.filter(text='teeeeeeeeeeext',
+                                   ).exists(),
+            Post.objects.filter(author=self.author,
+                                text='Тестовый пост 3')
         )
