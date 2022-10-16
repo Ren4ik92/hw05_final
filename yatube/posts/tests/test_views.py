@@ -191,7 +191,6 @@ class PostPagesTests(TestCase):
             after_clear_cache_response,
             post_cache_response,
         )
-        self.assertTrue(pre_cache_page == post_cache_page)
 
     def test_comment_view(self):
         """Шаблоны post_detail отображают созданный комментарий на
@@ -213,9 +212,11 @@ class PostPagesTests(TestCase):
         self.authorized_client.get(
             reverse('posts:profile_follow', args=[self.user2])
         )
-        following = Follow.objects.get(user=self.user, author=self.user2).id
-        latest_follow = Follow.objects.latest('id').id
-        self.assertEqual(following, latest_follow)
+        self.assertTrue(
+            Follow.objects.filter(
+                user=self.user,
+                author=self.user2).exists()
+        )
 
     def test_new_user_post_appears_in_the_feed_of_those_who_follow_him(self):
         """Пользователю видны посты после подписания на автора"""
