@@ -29,6 +29,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '[::1]',
     'testserver',
+    'www.ren4ik92.pythonanywhere.com',
+    'ren4ik92.pythonanywhere.com',
 ]
 
 # Application definition
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sorl.thumbnail',
+    'emoji_picker',
 ]
 
 MIDDLEWARE = [

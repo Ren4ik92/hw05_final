@@ -8,6 +8,7 @@ from django.conf import settings
 import tempfile
 from ..models import Post, Group, User, Comment
 from ..forms import PostForm
+from .test_forms import TEMP_MEDIA_ROOT
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -54,8 +55,8 @@ class PostCreateFormTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
 
     def test_create_post(self):
         """Валидная форма создает запись в post."""
