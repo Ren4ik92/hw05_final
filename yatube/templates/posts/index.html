@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load thumbnail %}
 {% block title %}Последние обновления на сайте{% endblock %}
-
 {% block content %}
+    <div class="container py-5">
     {% include 'includes/switcher.html' %}
 {% for post in page_obj %}
   <ul>
@@ -15,9 +15,9 @@
   </ul>
   <p>{{ post.text }}</p>
     {% if post.image %}
-        {% thumbnail post.image "930x339" crop="center" upscale=True as im %}
-            <img class="card-img my-2" src="{{ im.url }}">
-        {% endthumbnail %}
+        {% thumbnail post.image "860x339" crop="center" upscale=True as im %}
+        <img class="card-img my-2" src="{{ im.url }}">
+      {% endthumbnail %}
     {% endif %}
   <a href="{% url 'posts:post_detail' post.id %}">подробная информация</a>
   {% if post.group %}
@@ -26,4 +26,5 @@
   {% if not forloop.last %}<hr>{% endif %}
 {% endfor %}
 {% include 'includes/paginator.html' %}
+    </div>
 {% endblock %}
