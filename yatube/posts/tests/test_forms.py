@@ -8,7 +8,7 @@ from django.conf import settings
 import tempfile
 from ..models import Post, Group, User, Comment
 from ..forms import PostForm
-from .test_forms import TEMP_MEDIA_ROOT
+# from .test_forms import TEMP_MEDIA_ROOT
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 

@@ -37,6 +37,10 @@ class Post(models.Model):
         upload_to='posts/',
         blank=True
     )
+    liked = models.ManyToManyField(User,
+                                   default=None,
+                                   blank=True,
+                                   related_name='liked')
 
     def __str__(self):
         return self.text
@@ -54,6 +58,12 @@ class Post(models.Model):
     class Meta:
         ordering = ['-pub_date']
         verbose_name_plural = 'записи', 'Авторы', 'посты'
+
+
+LIKE_CHOICES = (
+        ('Like', 'Like'),
+        ('Unlike', 'Unlike'),
+    )
 
 
 class Comment(models.Model):
@@ -94,3 +104,19 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name='following'
     )
+
+
+class Likes(models.Model):
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='user_like')
+    post = models.ForeignKey(Post,
+                             on_delete=models.CASCADE,
+                             related_name='post_like'
+                             )
+    value = models.CharField(choices=LIKE_CHOICES,
+                             default='Like',
+                             max_length=10)
+
+    def __str__(self):
+        return str(self.post)

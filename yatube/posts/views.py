@@ -1,15 +1,19 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Group, User, Follow
+from .models import Post, Group, User, Follow, Likes
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from .units import paginator_posts, MESSAGE_N
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 
 
 def index(request):
     template = 'posts/index.html'
     post_list = Post.objects.all()
+    user = request.user
     context = {
         'page_obj': paginator_posts(post_list, MESSAGE_N, request),
+        'user': user
     }
     return render(request, template, context)
 
@@ -130,3 +134,27 @@ def profile_unfollow(request, username):
             user=request.user, author=author).exists():
         Follow.objects.filter(user=request.user, author=author).delete()
     return redirect('posts:profile', author)
+
+
+@login_required
+def likes_post(request):
+    user = request.user
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        post_obj = Post.objects.get(id=post_id)
+
+        if user in post_obj.liked.all():
+            post_obj.liked.remove(user)
+        else:
+            post_obj.liked.add(user)
+        like, create = Likes.objects.get_or_create(user=user, post_id=post_id)
+
+        if not create:
+            if like.value == 'Like':
+                like.value = 'Unlike'
+            else:
+                like.value = 'Like'
+        like.save()
+    return redirect('posts:index')
+
+

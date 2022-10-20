@@ -1,0 +1,11 @@
+<form action="{% url 'posts:post_like' %}" method="POST" class="ui from">
+    {% csrf_token %}
+    <input type="hidden" name="post_id" value="{{ post.id }}">
+    {% if user not in post.liked.all %}
+        <button type="submit", style="background-color: #c5d7f2">Like</button>
+        <strong>{{ post.liked.all.count }}</strong>
+    {% else %}
+        <button type="submit", style="background-color: green">Like</button>
+        <strong>{{ post.liked.all.count }}</strong>
+    {% endif %}
+</form>
