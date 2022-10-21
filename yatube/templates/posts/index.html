@@ -21,9 +21,9 @@
         <img class="card-img my-2" src="{{ im.url }}">
       {% endthumbnail %}
     {% endif %}
-  <a href="{% url 'posts:post_detail' post.id %}">подробная информация</a>
+  <a href="{% url 'posts:post_detail' post.id %}" class="btn btn-outline-dark">подробная информация</a>
   {% if post.group %}
-    <p><a href="{% url 'posts:postsname' post.group.slug %}">все записи группы</a></p>
+    <p><a href="{% url 'posts:postsname' post.group.slug %}" class="btn btn-outline-dark">все записи группы</a></p>
   {% endif %}
     {% include 'includes/likes.html' %}
 

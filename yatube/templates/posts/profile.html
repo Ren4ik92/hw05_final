@@ -12,7 +12,7 @@
       {% if following %}
     <a
       class="btn btn-lg btn-light"
-      href="{% url 'posts:profile_unfollow' author.username %}" role="button"
+      href="{% url 'posts:profile_unfollow' author.username %} " role="button"
     >
       Отписаться
     </a>
@@ -44,10 +44,10 @@
           {% endthumbnail %}
           {% endif %}
                   </p>
-                  <a href="{% url 'posts:post_detail' post.pk %}">Подробная информация </a>
+                  <a href="{% url 'posts:post_detail' post.pk %}" class="btn btn-outline-dark">Подробная информация </a>
                 </article>
                 {% if post.group %}
-                <a href="{% url 'posts:postsname' post.group.slug %}">Все записи группы</a>
+                <a href="{% url 'posts:postsname' post.group.slug %}" class="btn btn-outline-dark">Все записи группы</a>
                 {% endif %}
                 {% if not forloop.last %}<hr>{% endif %}
             {% endfor%}
